@@ -1,0 +1,10 @@
+<webscript>
+  <shortname>Get datalist values</shortname>
+  <description>Get datalist values from customized items 
+  To test: curl -v -u admin:admin "http://localhost:8080/alfresco/service/keensoft/datalist/{name}"
+  </description>
+  <url>/keensoft/datalist/{name}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>none</transaction>
+</webscript>

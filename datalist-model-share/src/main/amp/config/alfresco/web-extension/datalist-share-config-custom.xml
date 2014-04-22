@@ -1,0 +1,36 @@
+<alfresco-config>
+   <config evaluator="model-type" condition="dlm:optionList">
+      <forms>
+         <form>
+            <field-visibility>
+               <show id="dlm:code" />
+               <show id="dlm:value" />
+             </field-visibility>
+            <create-form template="/org/alfresco/components/data-lists/forms/dataitem.ftl" />
+            <appearance>
+            </appearance>
+         </form>
+
+         <form id="datagrid">
+            <field-visibility>
+               <show id="dlm:code" />
+               <show id="dlm:value" />
+            </field-visibility>
+         </form>
+      </forms>
+   </config>
+
+   <config evaluator="node-type" condition="dlm:optionList">
+      <forms>
+         <form>
+            <field-visibility>
+               <show id="dlm:code" />
+               <show id="dlm:value" />
+            </field-visibility>
+            <edit-form template="/org/alfresco/components/data-lists/forms/dataitem.ftl" />
+            <appearance>
+            </appearance>
+         </form>
+      </forms>
+   </config>
+</alfresco-config>

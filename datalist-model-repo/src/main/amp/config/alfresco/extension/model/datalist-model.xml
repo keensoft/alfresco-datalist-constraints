@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="dlm:datalistsmodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+	<description>HTML Option list values</description>
+	<author>keensoft</author>
+	<version>1.0</version>
+
+   <imports>
+      <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+      <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+      <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl"/>
+
+   </imports>
+
+	<namespaces>
+		<namespace uri="http://www.alfresco.com/model/datalistmodel/1.0" prefix="dlm" />
+	</namespaces>
+
+   <types>
+
+      <type name="dlm:optionList">
+         <title>Options</title>
+         <parent>dl:dataListItem</parent>
+         <properties>
+            <property name="dlm:code">
+               <title>Code</title>
+               <type>d:text</type>
+            </property>
+            <property name="dlm:value">
+               <title>Value</title>
+               <type>d:text</type>
+            </property>
+         </properties>
+      </type>
+
+    </types>
+
+</model>

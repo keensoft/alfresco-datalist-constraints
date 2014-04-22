@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+
+<beans>
+
+	<bean id="extension.dlm.dictionaryBootstrap" parent="dictionaryModelBootstrap" depends-on="dictionaryBootstrap">
+		<property name="models">
+			<list>
+				<value>alfresco/extension/model/datalist-model.xml</value>
+				<value>alfresco/extension/model/custom-model.xml</value>
+			</list>
+		</property>
+	</bean>
+	 <bean id="extension.dlm.resourceBundle" class="org.alfresco.i18n.ResourceBundleBootstrapComponent">
+       <property name="resourceBundles">
+          <list>
+             <value>alfresco.messages.datalist-model</value>
+             <value>alfresco.messages.custom-model</value>
+          </list>
+       </property>
+    </bean>
+    
+	<bean id="webscript.es.keensoft.datalist.datalist.get" 
+	      class="es.keensoft.alfresco.action.webscript.DataListWebScript" parent="webscript">
+	      <property name="nodeService" ref="NodeService"/>
+	      <property name="siteService" ref="SiteService"/>
+	      <property name="transactionService" ref="TransactionService" />
+	      <property name="taggingService" ref="TaggingService" />
+	      <!-- TODO Customize this value with Site shortname used to manage option lists -->
+          <property name="publicSiteName" value="administration" />
+    </bean>
+    
+</beans>
