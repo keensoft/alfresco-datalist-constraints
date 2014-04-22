@@ -12,3 +12,7 @@ Use datalists to maintain Alfresco model constraints:
 7. Upload a new document
 8. Add "Sample" aspect to document
 9. On "Option lists" section you should see two new fields ("option" and "another option") with combos showing the data populated on step 5
+
+![alt tag](https://cloud.githubusercontent.com/assets/1818300/2766867/b0fcbb8c-ca32-11e3-83f4-f2ff76690683.png)
+
+![alt tag](https://cloud.githubusercontent.com/assets/1818300/2766889/fd96af8e-ca32-11e3-9dbe-04af7007c113.png)
