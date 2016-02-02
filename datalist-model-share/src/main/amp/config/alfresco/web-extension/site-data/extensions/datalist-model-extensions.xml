@@ -1,0 +1,14 @@
+<extension>
+    <modules>
+        <module>
+            <id>Datalist model</id>
+            <customizations>
+                <customization>
+                    <targetPackageRoot>org.alfresco</targetPackageRoot>
+                    <sourcePackageRoot>es.keensoft.datalist</sourcePackageRoot>
+                </customization>
+            </customizations>
+            <auto-deploy>true</auto-deploy>
+        </module>
+    </modules>
+</extension>

@@ -1,7 +1,9 @@
 alfresco-datalist-constraints
 =============================
 
-Use datalists to maintain Alfresco model constraints:
+Use datalists to maintain Alfresco model constraints.
+
+Version 1.0.0 instructions:
 
 1. Deploy repo and share AMPs to Alfresco 4.2 CE
 2. Create a new site named "Administration"
