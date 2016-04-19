@@ -1,7 +1,14 @@
 package es.keensoft.alfresco.action.webscript;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.site.SiteServiceImpl;
@@ -33,6 +40,7 @@ public class DataListWebScript extends AbstractWebScript {
 	private SiteService siteService;
 	private TransactionService transactionService;
 	private TaggingService taggingService;
+	private Boolean dataListOrdered;
 
 	@Override
 	public void execute(WebScriptRequest request, WebScriptResponse response) throws IOException {
@@ -44,6 +52,7 @@ public class DataListWebScript extends AbstractWebScript {
     	try {
     		
     		List<SiteInfo> sites = siteService.listSites(null, DATALIST_PRESET);
+    		Map<String, String> values = new HashMap<String, String>();
     		
     		for (SiteInfo site : sites) {
     		
@@ -61,10 +70,16 @@ public class DataListWebScript extends AbstractWebScript {
 						    for (ChildAssociationRef item : itemsNodes) {
 						    	
 						    	if (nodeService.getType(item.getChildRef()).isMatch(DatalistModel.DATALIST_MODEL_ITEM_TYPE)) {
-						            JSONObject obj = new JSONObject();
-						    		obj.put(JSON_CODE, nodeService.getProperty(item.getChildRef(), DatalistModel.DATALIST_MODEL_CODE_PROPERTY).toString());
-						    		obj.put(JSON_VALUE, nodeService.getProperty(item.getChildRef(), DatalistModel.DATALIST_MODEL_VALUE_PROPERTY).toString());
-					    			objProcess.put(obj);
+						    		// Previous behaviour, include values as they were introduced in Alfresco
+						    		if (!dataListOrdered) {
+							            JSONObject obj = new JSONObject();
+							    		obj.put(JSON_CODE, nodeService.getProperty(item.getChildRef(), DatalistModel.DATALIST_MODEL_CODE_PROPERTY).toString());
+							    		obj.put(JSON_VALUE, nodeService.getProperty(item.getChildRef(), DatalistModel.DATALIST_MODEL_VALUE_PROPERTY).toString());
+						    			objProcess.put(obj);
+						    		} else {
+						    			values.put(nodeService.getProperty(item.getChildRef(), DatalistModel.DATALIST_MODEL_CODE_PROPERTY).toString(),
+						    			    nodeService.getProperty(item.getChildRef(), DatalistModel.DATALIST_MODEL_VALUE_PROPERTY).toString());
+						    		}
 						    	} else {
 						    		// Ignore other datalist types
 						    		continue;
@@ -77,6 +92,17 @@ public class DataListWebScript extends AbstractWebScript {
 				}
 				
 			}
+    		
+    		// Ordered
+    		if (dataListOrdered) {
+    			Map<String, String> sortedValues = sortByComparator(values);
+    			for (Map.Entry<String, String> entry : sortedValues.entrySet()) {
+		            JSONObject obj = new JSONObject();
+		    		obj.put(JSON_CODE, entry.getKey());
+		    		obj.put(JSON_VALUE, entry.getValue());
+	    			objProcess.put(obj);
+    			}
+    		}
 			
     	} catch (Exception e) {
     		throw new IOException(e);
@@ -87,6 +113,29 @@ public class DataListWebScript extends AbstractWebScript {
     	response.getWriter().write(jsonString);
 
 	}
+	
+	private static Map<String, String> sortByComparator(Map<String, String> unsortMap) {
+
+		// Convert Map to List
+		List<Map.Entry<String, String>> list = 
+			new LinkedList<Map.Entry<String, String>>(unsortMap.entrySet());
+
+		// Sort list with comparator, to compare the Map values
+		Collections.sort(list, new Comparator<Map.Entry<String, String>>() {
+			public int compare(Map.Entry<String, String> o1,
+                                           Map.Entry<String, String> o2) {
+				return (o1.getValue()).compareTo(o2.getValue());
+			}
+		});
+
+		// Convert sorted map back to a Map
+		Map<String, String> sortedMap = new LinkedHashMap<String, String>();
+		for (Iterator<Map.Entry<String, String>> it = list.iterator(); it.hasNext();) {
+			Map.Entry<String, String> entry = it.next();
+			sortedMap.put(entry.getKey(), entry.getValue());
+		}
+		return sortedMap;
+	}	
 
 	public void setNodeService(NodeService nodeService) {
 		this.nodeService = nodeService;
@@ -102,6 +151,10 @@ public class DataListWebScript extends AbstractWebScript {
 
 	public void setTaggingService(TaggingService taggingService) {
 		this.taggingService = taggingService;
+	}
+
+	public void setDataListOrdered(Boolean dataListOrdered) {
+		this.dataListOrdered = dataListOrdered;
 	}
 
 }

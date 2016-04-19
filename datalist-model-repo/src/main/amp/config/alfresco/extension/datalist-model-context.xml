@@ -23,6 +23,7 @@
 	      <property name="siteService" ref="SiteService"/>
 	      <property name="transactionService" ref="TransactionService" />
 	      <property name="taggingService" ref="TaggingService" />
+	      <property name="dataListOrdered" value="${datalist.show.ordered}" />
     </bean>
     
 </beans>
