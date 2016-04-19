@@ -3,8 +3,6 @@ alfresco-datalist-constraints
 
 Use datalists to maintain Alfresco model constraints.
 
-Version 1.0.0 instructions:
-
 1. Deploy repo and share AMPs to Alfresco 4.2 CE
 2. Create a new site named "Administration"
 3. Configure site dashboard to include Datalists
@@ -18,3 +16,15 @@ Version 1.0.0 instructions:
 ![alt tag](https://cloud.githubusercontent.com/assets/1818300/2766867/b0fcbb8c-ca32-11e3-83f4-f2ff76690683.png)
 
 ![alt tag](https://cloud.githubusercontent.com/assets/1818300/2766889/fd96af8e-ca32-11e3-9dbe-04af7007c113.png)
+
+## Version 2.1.0
+
+Only repo artifact is versioned as 2.1.0, available at [datalist-model-repo.amp](https://github.com/keensoft/alfresco-datalist-constraints/releases/download/2.1.0/datalist-model-repo.amp)
+
+Requires an additional property at `alfresco-global.properties`
+
+```bash
+datalist.show.ordered=true
+```
+
+If **true** values are showed ordered by value in combos, if **false** values are showed as they were introduced in combos.
