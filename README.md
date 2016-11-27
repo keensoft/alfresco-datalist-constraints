@@ -1,3 +1,4 @@
+
 alfresco-datalist-constraints
 =============================
 
@@ -28,3 +29,19 @@ datalist.show.ordered=true
 ```
 
 If **true** values are showed ordered by value in combos, if **false** values are showed as they were introduced in combos.
+
+## Version 2.1.1
+
+Both artifacts are versioned as 2.1.1
+
+Support for multiple values control
+
+```xml
+<field id="ks:option">
+    <control template="/org/alfresco/components/form/controls/datalistSelectone-multiple.ftl">
+        <control-param name="itemType">Option</control-param>
+    </control>                    
+</field>
+```
+
+*Based in Doña Ana County [multivalue form control](https://github.com/donaanacounty/multivalueFormControl)*
