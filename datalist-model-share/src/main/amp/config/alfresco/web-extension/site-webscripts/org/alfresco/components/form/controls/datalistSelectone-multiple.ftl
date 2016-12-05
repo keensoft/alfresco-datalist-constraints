@@ -140,7 +140,7 @@
 					+ "></select><img class='icon' style='vertical-align: middle;margin-left:5px;' id='minus-"+index+"-${fieldHtmlId}' src='${url.context}/res/sp/components/form/images/minus-icon.png' alt='Delete this input' "
 					+ " />";
 			document.getElementById(divName).appendChild(newdiv);
-			fillOptions("txt" + hiddenInputId + index, value);
+			fillOptions${field.id}("txt" + hiddenInputId + index, value);
 
             // find text field, attach oninput event listener
             var input = document.querySelector('#txt' + hiddenInputId + index);
@@ -278,14 +278,14 @@ YAHOO.util.Event.onContentReady("${fieldHtmlId}", function ()
       var selects = document.getElementsByTagName('select');
       for (var i = 0; i < selects.length; i++) {
           if (selects[i].id.indexOf("${fieldHtmlId}") > 0) {
-              fillOptions(selects[i].id);
+              fillOptions${field.id}(selects[i].id);
           }
       }
 
 
 }, this);
 
-function fillOptions(selectId, value) {
+function fillOptions${field.id}(selectId, value) {
 
    	  Alfresco.util.Ajax.jsonGet({
           url: encodeURI(Alfresco.constants.PROXY_URI + '/keensoft/datalist/${field.control.params.itemType}?'+ (new Date().getTime())),
@@ -298,7 +298,7 @@ function fillOptions(selectId, value) {
                  {
                  
                       var select = document.getElementById(selectId);
-                          
+                      
 			          for (var j = 0; j < obj.length; j++) {
                     	var newOption = document.createElement('option');
                     	newOption.value = obj[j].code;
