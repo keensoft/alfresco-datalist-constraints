@@ -45,3 +45,9 @@ Support for multiple values control
 ```
 
 *Based in Doña Ana County [multivalue form control](https://github.com/donaanacounty/multivalueFormControl)*
+
+## Version 2.1.2
+
+Both artifacts are versioned as 2.1.2
+
+Fixed deployment of web resources in the file-mapping.properties 
