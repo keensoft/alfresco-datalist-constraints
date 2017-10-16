@@ -2,7 +2,9 @@
 alfresco-datalist-constraints
 =============================
 
-Use datalists to maintain Alfresco model constraints.
+*Compatible with Alfresco CE 4.2.c, 4.2.f, 5.0.d, 5.1.g (aka 201605) & 5.2.g (aka 201707)*
+
+Using datalists to maintain Alfresco model constraints.
 
 1. Deploy repo and share AMPs to Alfresco
 2. Create a new site selecting Site Preset **Dictionary**
@@ -53,6 +55,8 @@ Both artifacts are versioned as 2.1.2
 Fixed deployment of web resources in the file-mapping.properties 
 
 ## Version 3.0.0
+
+AMP artifacts ready-to-deploy available at [3.0.0](https://github.com/keensoft/alfresco-datalist-constraints/releases/tag/3.0.0)
 
 It can be defined the same DataList ID to be applied locally inside a Site, overriding global `Dictionary` datalist values. When using for advanced search, new `search` parameter has been added for FTL control in order to mix all values from local sites and `Dictionary` sites.
 
