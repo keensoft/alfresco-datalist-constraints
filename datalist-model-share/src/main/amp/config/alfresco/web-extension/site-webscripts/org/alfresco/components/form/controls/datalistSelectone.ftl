@@ -68,8 +68,16 @@
 YAHOO.util.Event.onContentReady("${fieldHtmlId}", function ()
 {
 
-   	  Alfresco.util.Ajax.jsonGet({
-          url: encodeURI(Alfresco.constants.PROXY_URI + '/keensoft/datalist/${field.control.params.itemType}?'+ (new Date().getTime())),
+  <#if field.control.params.search?? && field.control.params.search == "true">
+      var linkTemplate="/keensoft/datalist/${field.control.params.itemType}?search=true&"+ (new Date().getTime());  
+  <#elseif page?? && page.url.templateArgs.site??>
+      var linkTemplate="/keensoft/datalist/${field.control.params.itemType}?siteId=${page.url.templateArgs.site!""}&"+ (new Date().getTime());
+  <#else>
+      var linkTemplate="/keensoft/datalist/${field.control.params.itemType}?"+ (new Date().getTime());
+  </#if>
+
+      Alfresco.util.Ajax.jsonGet({      
+          url: encodeURI(Alfresco.constants.PROXY_URI + linkTemplate),
           successCallback:
           {
              fn: function loadWebscript_successCallback(response, config)
@@ -78,21 +86,21 @@ YAHOO.util.Event.onContentReady("${fieldHtmlId}", function ()
                  if (obj)
                  {
                  
-			          for (i = 0; i < obj.length; i++) {
-                    	var newOption = document.createElement('option');
-                    	newOption.value = obj[i].code;
-                    	newOption.text = obj[i].value;
-                   	    YAHOO.util.Dom.get("${fieldHtmlId}").options.add(newOption);
-		        	  }
-		        	  
-					  // Current value
-					  var sp = document.getElementById("${fieldHtmlId}");
-					  sp.value = "${field.value}";
-		        	  
+	                for (i = 0; i < obj.length; i++) {
+	                      var newOption = document.createElement('option');
+	                      newOption.value = obj[i].code;
+	                      newOption.text = obj[i].value;
+	                      YAHOO.util.Dom.get("${fieldHtmlId}").options.add(newOption);
+	                }
+                
+		            // Current value
+		            var sp = document.getElementById("${fieldHtmlId}");
+		            sp.value = "${field.value}";
+                
                  }
              }
           }
-	   });
+     });
     
 
 }, this);

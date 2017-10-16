@@ -1,0 +1,61 @@
+<alfresco-config>       
+
+      <!-- Document Library config section -->
+      <config condition="DocumentLibrary" evaluator="string-compare" replace="false">
+         <aspects>
+            <visible>
+               <aspect label="Datalistable" name="ksds:Datalistable"/>
+            </visible>
+         </aspects>
+      </config>
+
+      <!-- Form configuration section - type -->
+      
+      <!-- Form configuration section - aspect -->
+      <config condition="ksds:Datalistable" evaluator="aspect">
+         <forms>
+            <form>
+               <field-visibility>
+                  <show id="ksds:option"/>
+               </field-visibility>
+               <appearance>
+                  <set appearance="whitespace" id="ksds:Datalistable_cmm_set0"/>
+                  <field id="ksds:option" set="ksds:Datalistable_cmm_set0">
+                      <control template="/org/alfresco/components/form/controls/datalistSelectone.ftl">
+                          <control-param name="itemType">Option</control-param>
+                      </control>
+                  </field>
+               </appearance>
+            </form>
+         </forms>
+      </config>
+
+   <config evaluator="model-type" condition="cm:content">
+      <forms>
+            <form id="custom-model-search">
+               <field-visibility>
+                  <show id="ksds:option" force="true"/>
+               </field-visibility>
+               <appearance>
+                  <field id="ksds:option">
+                      <control template="/org/alfresco/components/form/controls/datalistSelectone.ftl">
+                          <control-param name="itemType">Option</control-param>
+                          <control-param name="search">true</control-param>
+                      </control>
+                  </field>
+               </appearance>            
+            </form>
+      </forms>
+   </config>
+               
+   <config evaluator="string-compare" condition="AdvancedSearch" replace="true">
+      <advanced-search>
+         <forms>
+            <form labelId="search.form.label.cm_content" descriptionId="search.form.desc.cm_content">cm:content</form>
+            <form labelId="search.form.label.cm_folder" descriptionId="search.form.desc.cm_folder">cm:folder</form>
+            <form id="custom-model-search" label="Sample" description="Sample" sites="ANY">cm:content</form>
+         </forms>
+      </advanced-search>
+   </config>  
+
+</alfresco-config>

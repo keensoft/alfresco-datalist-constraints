@@ -4,12 +4,12 @@ alfresco-datalist-constraints
 
 Use datalists to maintain Alfresco model constraints.
 
-1. Deploy repo and share AMPs to Alfresco 4.2 CE
-2. Create a new site named "Administration"
-3. Configure site dashboard to include Datalists
+1. Deploy repo and share AMPs to Alfresco
+2. Create a new site selecting Site Preset **Dictionary**
+3. Configure site dashboard to include *Datalists*
 4. Create two new datalists from type "Options", one called "Smartphones" and another called "OS"
 5. Populate the datalists with some values (01 - Android, 02 - iOS...)
-6. Create a new site (with any name)
+6. Create a new site
 7. Upload a new document
 8. Add "Sample" aspect to document
 9. On "Option lists" section you should see two new fields ("option" and "another option") with combos showing the data populated on step 5
@@ -51,3 +51,28 @@ Support for multiple values control
 Both artifacts are versioned as 2.1.2
 
 Fixed deployment of web resources in the file-mapping.properties 
+
+## Version 3.0.0
+
+It can be defined the same DataList ID to be applied locally inside a Site, overriding global `Dictionary` datalist values. When using for advanced search, new `search` parameter has been added for FTL control in order to mix all values from local sites and `Dictionary` sites.
+
+** Sample scenario **
+
+Datalist definitions
+
+```
+Dictionary Site > Datalist "Options" > Values = 1,2
+Sample 1 Site   > Datalist "Options" > Values = 3,4
+Sample 2 Site   > No datalist defined
+```
+
+Values provided by combos 
+
+```
+Outside from a Site  > Values = 1,2
+From Advanced Search > Values = 1,2,3,4
+From Sample 1 Site   > Values = 3,4
+From Sample 2 Site   > Values = 1,2
+```
+
+>> Sample custom model and Share form definition are being provided at folder `datalist-sample`

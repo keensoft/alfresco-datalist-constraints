@@ -1,6 +1,7 @@
 package es.keensoft.alfresco.action.webscript;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -45,72 +46,88 @@ public class DataListWebScript extends AbstractWebScript {
 	@Override
 	public void execute(WebScriptRequest request, WebScriptResponse response) throws IOException {
 		
-		String targetedDataListName = request.getExtensionPath(); 
+		String targetedDataListName = request.getExtensionPath();
 		
-    	JSONArray objProcess = new JSONArray();
+		// 1. search = sites + dictionary
+		// 2. siteId = if exists(site) ? site : dictionary
+		// 3. ...... = dictionary
 		
-    	try {
+		List<SiteInfo> sites = new ArrayList<SiteInfo>();
+		String search = request.getParameter("search");
+		if (search != null && search.toLowerCase().equals("true")) {
+            sites.addAll(getSitesDataList(targetedDataListName));
+		} else {
+		    String siteId = request.getParameter("siteId");
+		    if (siteId != null && existsDatalist(siteId, targetedDataListName)) {
+		        sites.add(siteService.getSite(siteId));
+		    } else {
+		        sites = siteService.listSites(null, DATALIST_PRESET);
+		    }
+		}
+		
+        	JSONArray objProcess = new JSONArray();
     		
-    		List<SiteInfo> sites = siteService.listSites(null, DATALIST_PRESET);
-    		Map<String, String> values = new HashMap<String, String>();
-    		
-    		for (SiteInfo site : sites) {
-    		
-				NodeRef dataListContainer = SiteServiceImpl.getSiteContainer(site.getShortName(), DATALIST_CONTAINER_ID, true, siteService, transactionService, taggingService);
-				List<ChildAssociationRef> dataListsNodes = nodeService.getChildAssocs(dataListContainer);
-				
-				for (ChildAssociationRef dataList : dataListsNodes) {
-					
-					if (dataList.getTypeQName().isMatch(ContentModel.ASSOC_CONTAINS)) {
-						
-						if (nodeService.getProperty(dataList.getChildRef(), ContentModel.PROP_TITLE).toString().equals(targetedDataListName)) {
-							
-						    List<ChildAssociationRef> itemsNodes = nodeService.getChildAssocs(dataList.getChildRef(), ContentModel.ASSOC_CONTAINS, RegexQNamePattern.MATCH_ALL);
-						    
-						    for (ChildAssociationRef item : itemsNodes) {
-						    	
-						    	if (nodeService.getType(item.getChildRef()).isMatch(DatalistModel.DATALIST_MODEL_ITEM_TYPE)) {
-						    		// Previous behaviour, include values as they were introduced in Alfresco
-						    		if (!dataListOrdered) {
-							            JSONObject obj = new JSONObject();
-							    		obj.put(JSON_CODE, nodeService.getProperty(item.getChildRef(), DatalistModel.DATALIST_MODEL_CODE_PROPERTY).toString());
-							    		obj.put(JSON_VALUE, nodeService.getProperty(item.getChildRef(), DatalistModel.DATALIST_MODEL_VALUE_PROPERTY).toString());
-						    			objProcess.put(obj);
-						    		} else {
-						    			values.put(nodeService.getProperty(item.getChildRef(), DatalistModel.DATALIST_MODEL_CODE_PROPERTY).toString(),
-						    			    nodeService.getProperty(item.getChildRef(), DatalistModel.DATALIST_MODEL_VALUE_PROPERTY).toString());
-						    		}
-						    	} else {
-						    		// Ignore other datalist types
-						    		continue;
-						    	}
-			                }
-							
-						}
-						
-					}
-				}
-				
-			}
-    		
-    		// Ordered
-    		if (dataListOrdered) {
-    			Map<String, String> sortedValues = sortByComparator(values);
-    			for (Map.Entry<String, String> entry : sortedValues.entrySet()) {
-		            JSONObject obj = new JSONObject();
-		    		obj.put(JSON_CODE, entry.getKey());
-		    		obj.put(JSON_VALUE, entry.getValue());
-	    			objProcess.put(obj);
+        	try {
+        		
+        		Map<String, String> values = new HashMap<String, String>();
+        		
+        		for (SiteInfo site : sites) {
+        		
+        		    NodeRef dataListContainer = SiteServiceImpl.getSiteContainer(site.getShortName(), DATALIST_CONTAINER_ID, true, siteService, transactionService, taggingService);
+        		    List<ChildAssociationRef> dataListsNodes = nodeService.getChildAssocs(dataListContainer);
+
+        		    for (ChildAssociationRef dataList : dataListsNodes) {
+
+        		        if (dataList.getTypeQName().isMatch(ContentModel.ASSOC_CONTAINS)) {
+
+        		            if (nodeService.getProperty(dataList.getChildRef(), ContentModel.PROP_TITLE).toString().equals(targetedDataListName)) {
+
+        		                List<ChildAssociationRef> itemsNodes = nodeService.getChildAssocs(dataList.getChildRef(), ContentModel.ASSOC_CONTAINS, RegexQNamePattern.MATCH_ALL);
+
+        		                for (ChildAssociationRef item : itemsNodes) {
+
+        		                    if (nodeService.getType(item.getChildRef()).isMatch(DatalistModel.DATALIST_MODEL_ITEM_TYPE)) {
+        		                        // Previous behaviour, include values as they were introduced in Alfresco
+        		                        if (!dataListOrdered) {
+        		                            JSONObject obj = new JSONObject();
+        		                            obj.put(JSON_CODE, nodeService.getProperty(item.getChildRef(), DatalistModel.DATALIST_MODEL_CODE_PROPERTY).toString());
+        		                            obj.put(JSON_VALUE, nodeService.getProperty(item.getChildRef(), DatalistModel.DATALIST_MODEL_VALUE_PROPERTY).toString());
+        		                            objProcess.put(obj);
+        		                        } else {
+        		                            values.put(nodeService.getProperty(item.getChildRef(), DatalistModel.DATALIST_MODEL_CODE_PROPERTY).toString(),
+        		                                    nodeService.getProperty(item.getChildRef(), DatalistModel.DATALIST_MODEL_VALUE_PROPERTY).toString());
+        		                        }
+        		                    } else {
+        		                        // Ignore other datalist types
+        		                        continue;
+        		                    }
+        		                }
+
+        		            }
+
+        		        }
+    				}
+    				
     			}
-    		}
-			
-    	} catch (Exception e) {
-    		throw new IOException(e);
-    	}
-    	
-    	String jsonString = objProcess.toString();
-    	response.setContentEncoding("UTF-8");
-    	response.getWriter().write(jsonString);
+        		
+        		// Ordered
+        		if (dataListOrdered) {
+        			Map<String, String> sortedValues = sortByComparator(values);
+        			for (Map.Entry<String, String> entry : sortedValues.entrySet()) {
+    		            JSONObject obj = new JSONObject();
+    		    		obj.put(JSON_CODE, entry.getKey());
+    		    		obj.put(JSON_VALUE, entry.getValue());
+    	    			objProcess.put(obj);
+        			}
+        		}
+    			
+        	} catch (Exception e) {
+        		throw new IOException(e);
+        	}
+        	
+        	String jsonString = objProcess.toString();
+        	response.setContentEncoding("UTF-8");
+        	response.getWriter().write(jsonString);
 
 	}
 	
@@ -135,7 +152,44 @@ public class DataListWebScript extends AbstractWebScript {
 			sortedMap.put(entry.getKey(), entry.getValue());
 		}
 		return sortedMap;
-	}	
+	}
+	
+	private boolean existsDatalist(String siteId, String targetedDataListName) {
+	    
+        NodeRef dataListContainer = SiteServiceImpl.getSiteContainer(siteId, DATALIST_CONTAINER_ID, true, siteService, transactionService, taggingService);
+        List<ChildAssociationRef> dataListsNodes = nodeService.getChildAssocs(dataListContainer);
+        for (ChildAssociationRef dataList : dataListsNodes) {
+            if (dataList.getTypeQName().isMatch(ContentModel.ASSOC_CONTAINS)) {
+                if (nodeService.getProperty(dataList.getChildRef(), ContentModel.PROP_TITLE).toString().equals(targetedDataListName)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+	    
+	}
+	
+	// TODO Improve performance, as this can be slow when having hundreds of sites
+	private List<SiteInfo> getSitesDataList(String targetedDataListName) {
+	    
+	    List<SiteInfo> sites = new ArrayList<SiteInfo>();
+	    
+	    List<SiteInfo> allSites = siteService.listSites(null, null);
+        for (SiteInfo site : allSites) {
+            NodeRef dataListContainer = SiteServiceImpl.getSiteContainer(site.getShortName(), DATALIST_CONTAINER_ID, true, siteService, transactionService, taggingService);
+            List<ChildAssociationRef> dataListsNodes = nodeService.getChildAssocs(dataListContainer);
+            for (ChildAssociationRef dataList : dataListsNodes) {
+                if (dataList.getTypeQName().isMatch(ContentModel.ASSOC_CONTAINS)) {
+                    if (nodeService.getProperty(dataList.getChildRef(), ContentModel.PROP_TITLE).toString().equals(targetedDataListName)) {
+                        sites.add(site);
+                    }
+                }
+            }
+        }
+        
+        return sites;
+	    
+	}
 
 	public void setNodeService(NodeService nodeService) {
 		this.nodeService = nodeService;

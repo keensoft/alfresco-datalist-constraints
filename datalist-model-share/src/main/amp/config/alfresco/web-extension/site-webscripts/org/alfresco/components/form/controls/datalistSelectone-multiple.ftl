@@ -287,8 +287,16 @@ YAHOO.util.Event.onContentReady("${fieldHtmlId}", function ()
 
 function fillOptions${field.id}(selectId, value) {
 
-   	  Alfresco.util.Ajax.jsonGet({
-          url: encodeURI(Alfresco.constants.PROXY_URI + '/keensoft/datalist/${field.control.params.itemType}?'+ (new Date().getTime())),
+  <#if field.control.params.search?? && field.control.params.search == "true">
+      var linkTemplate="/keensoft/datalist/${field.control.params.itemType}?search=true&"+ (new Date().getTime());  
+  <#elseif page?? && page.url.templateArgs.site??>
+      var linkTemplate="/keensoft/datalist/${field.control.params.itemType}?siteId=${page.url.templateArgs.site!""}&"+ (new Date().getTime());
+  <#else>
+      var linkTemplate="/keensoft/datalist/${field.control.params.itemType}?"+ (new Date().getTime());
+  </#if>
+
+   	  Alfresco.util.Ajax.jsonGet({   	  
+          url: encodeURI(Alfresco.constants.PROXY_URI + linkTemplate),
           successCallback:
           {
              fn: function loadWebscript_successCallback(response, config)
@@ -300,16 +308,16 @@ function fillOptions${field.id}(selectId, value) {
                       var select = document.getElementById(selectId);
                       
 			          for (var j = 0; j < obj.length; j++) {
-                    	var newOption = document.createElement('option');
-                    	newOption.value = obj[j].code;
-                    	newOption.text = obj[j].value;
-                   	    select.options.add(newOption);
-		        	  }
-		        	  
-                	  // Current value
-                	  if (value) {
-                	      select.value = value;
-                	  }
+	                    	var newOption = document.createElement('option');
+	                    	newOption.value = obj[j].code;
+	                    	newOption.text = obj[j].value;
+	                   	select.options.add(newOption);
+			        	  }
+			        	  
+	                	  // Current value
+	                	  if (value) {
+	                	      select.value = value;
+	                	  }
                  }
              }
           }
