@@ -49,20 +49,34 @@ public class DataListWebScript extends AbstractWebScript {
 		String targetedDataListName = request.getExtensionPath();
 		
 		// 1. search = sites + dictionary
-		// 2. siteId = if exists(site) ? site : dictionary
-		// 3. ...... = dictionary
+		// 2. nodeRef = site (if belongs to one)
+		// 3. siteId = if exists(site) ? site : dictionary
+		// 4. ...... = dictionary
 		
 		List<SiteInfo> sites = new ArrayList<SiteInfo>();
+		
 		String search = request.getParameter("search");
+        String siteId = request.getParameter("siteId");
+        String nodeRef = request.getParameter("nodeRef");
+        
 		if (search != null && search.toLowerCase().equals("true")) {
+		    
             sites.addAll(getSitesDataList(targetedDataListName));
+            
 		} else {
-		    String siteId = request.getParameter("siteId");
+		    
+		    if (nodeRef != null) {
+		        SiteInfo siteInfo = siteService.getSite(new NodeRef(nodeRef));
+		        if (siteInfo != null) {
+		            siteId = siteInfo.getShortName();
+		        }
+		    }
 		    if (siteId != null && existsDatalist(siteId, targetedDataListName)) {
 		        sites.add(siteService.getSite(siteId));
 		    } else {
 		        sites = siteService.listSites(null, DATALIST_PRESET);
 		    }
+		    
 		}
 		
         	JSONArray objProcess = new JSONArray();
@@ -72,7 +86,7 @@ public class DataListWebScript extends AbstractWebScript {
         		Map<String, String> values = new HashMap<String, String>();
         		
         		for (SiteInfo site : sites) {
-        		
+        		    
         		    NodeRef dataListContainer = SiteServiceImpl.getSiteContainer(site.getShortName(), DATALIST_CONTAINER_ID, true, siteService, transactionService, taggingService);
         		    List<ChildAssociationRef> dataListsNodes = nodeService.getChildAssocs(dataListContainer);
 
@@ -115,9 +129,9 @@ public class DataListWebScript extends AbstractWebScript {
         			Map<String, String> sortedValues = sortByComparator(values);
         			for (Map.Entry<String, String> entry : sortedValues.entrySet()) {
     		            JSONObject obj = new JSONObject();
-    		    		obj.put(JSON_CODE, entry.getKey());
-    		    		obj.put(JSON_VALUE, entry.getValue());
-    	    			objProcess.put(obj);
+    		    		    obj.put(JSON_CODE, entry.getKey());
+    		    		    obj.put(JSON_VALUE, entry.getValue());
+    	    			    objProcess.put(obj);
         			}
         		}
     			

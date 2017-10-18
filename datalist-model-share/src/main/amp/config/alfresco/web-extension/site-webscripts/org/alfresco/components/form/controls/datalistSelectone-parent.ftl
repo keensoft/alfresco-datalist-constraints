@@ -1,5 +1,14 @@
 <#include "/org/alfresco/components/form/controls/common/utils.inc.ftl" />
 
+<#--
+This control will hide the dependent controls injected via the
+control parameters in the form config by hiding the div {field.name}-control
+-->
+<#assign hideProperties=field.control.params.hideProperties>
+
+
+<#assign hideOnValue=field.control.params.hideOnValue>
+
 <#if field.control.params.optionSeparator??>
    <#assign optionSeparator=field.control.params.optionSeparator>
 <#else>
@@ -20,6 +29,13 @@
       <#assign fieldValue = args[field.control.params.defaultValueContextProperty]>
    </#if>
 </#if>
+
+<#if fieldValue?string == "${hideOnValue}">
+	<#assign hide=true>
+<#else>
+	<#assign hide=false>
+</#if>
+
 
 <div class="form-field">
    <#if form.mode == "view">
@@ -52,22 +68,24 @@
          <span class="viewmode-value">${valueToShow?html}</span>
       </div>
    <#else>
-      <label for="${fieldHtmlId}">${field.label?html}:<#if field.mandatory><span class="mandatory-indicator">${msg("form.required.fields.marker")}</span></#if></label>
-         <select id="${fieldHtmlId}" name="${field.name}" tabindex="0"
+      	 <label for="${fieldHtmlId}">${field.label?html}:<#if field.mandatory><span class="mandatory-indicator">${msg("form.required.fields.marker")}</span></#if></label>
+         <select id="${fieldHtmlId}" name="${field.name}" tabindex="0" onchange="checkValue()"
                <#if field.description??>title="${field.description}"</#if>
                <#if field.control.params.size??>size="${field.control.params.size}"</#if> 
                <#if field.control.params.styleClass??>class="${field.control.params.styleClass}"</#if>
                <#if field.control.params.style??>style="${field.control.params.style}"</#if>
                <#if field.disabled  && !(field.control.params.forceEditable?? && field.control.params.forceEditable == "true")>disabled="true"</#if>>
          </select>
+         <input id="${fieldHtmlId}-entry-tohide" type="hidden" name="-" value="${hideProperties}" /> 
    </#if>
 </div>
 
 <script type="text/javascript">//<![CDATA[
 
-YAHOO.util.Event.onContentReady("${fieldHtmlId}", function ()
-{
-
+		YAHOO.util.Event.onContentReady("${fieldHtmlId}", function ()
+		{
+			
+		   	  
   <#if field.control.params.search?? && field.control.params.search == "true">
       var linkTemplate="/keensoft/datalist/${field.control.params.itemType}?search=true&"+ (new Date().getTime());  
   <#elseif page?? && page.url.templateArgs.site??>
@@ -82,30 +100,47 @@ YAHOO.util.Event.onContentReady("${fieldHtmlId}", function ()
 
       Alfresco.util.Ajax.jsonGet({      
           url: encodeURI(Alfresco.constants.PROXY_URI + linkTemplate),
-          successCallback:
-          {
-             fn: function loadWebscript_successCallback(response, config)
-             {
-                 var obj = eval('(' + response.serverResponse.responseText + ')');
-                 if (obj)
-                 {
-                 
-	                for (i = 0; i < obj.length; i++) {
-	                      var newOption = document.createElement('option');
-	                      newOption.value = obj[i].code;
-	                      newOption.text = obj[i].value;
-	                      YAHOO.util.Dom.get("${fieldHtmlId}").options.add(newOption);
-	                }
-                
-		            // Current value
-		            var sp = document.getElementById("${fieldHtmlId}");
-		            sp.value = "${field.value}";
-                
-                 }
-             }
-          }
-     });
-    
+		          successCallback:
+		          {
+		             fn: function loadWebscript_successCallback(response, config)
+		             {
+		                 var obj = eval('(' + response.serverResponse.responseText + ')');
+		                 if (obj)
+		                 {
+		                 
+					          for (i = 0; i < obj.length; i++) {
+		                    	var newOption = document.createElement('option');
+		                    	newOption.value = obj[i].code;
+		                    	newOption.text = obj[i].value;
+		                   	    YAHOO.util.Dom.get("${fieldHtmlId}").options.add(newOption);
+				        	  }
+				        	  
+							  // Current value
+							  var sp = document.getElementById("${fieldHtmlId}");
+							  sp.value = "${field.value}";
+					   	  	
+					   	  	  <#if hide>
+					   	  			ENIModel.Util.HideDependentControls("${fieldHtmlId}", "${args.htmlid}");
+							  </#if>		   	  
+				        	  
+		                 }
+		             }
+		          }
+			   });
+		
+		}, this);
 
-}, this);
+
+   	  function checkValue() {
+   	  		var value = document.getElementById("${fieldHtmlId}").value
+   	  		if(value == "${hideOnValue}")
+   	  		{
+   	  			ENIModel.Util.HideDependentControls("${fieldHtmlId}", "${args.htmlid}");
+   	  		}
+   	  		else
+   	  		{
+   	  			ENIModel.Util.DisplayDependentControls("${fieldHtmlId}", "${args.htmlid}");
+   	  		}
+   	  }   	  
+
 //]]></script>

@@ -56,7 +56,7 @@ Fixed deployment of web resources in the file-mapping.properties
 
 ## Version 3.0.0
 
-AMP artifacts ready-to-deploy available at [3.0.0](https://github.com/keensoft/alfresco-datalist-constraints/releases/tag/3.0.0)
+AMP artifacts ready-to-deploy available at [3.1.0](https://github.com/keensoft/alfresco-datalist-constraints/releases/tag/3.1.0)
 
 It can be defined the same DataList ID to be applied locally inside a Site, overriding global `Dictionary` datalist values. When using for advanced search, new `search` parameter has been added for FTL control in order to mix all values from local sites and `Dictionary` sites.
 
@@ -80,3 +80,7 @@ From Sample 2 Site   > Values = 1,2
 ```
 
 >> Sample custom model and Share form definition are being provided at folder `datalist-sample`
+
+## Version 3.1.0
+
+Added controls for default value and parent selection

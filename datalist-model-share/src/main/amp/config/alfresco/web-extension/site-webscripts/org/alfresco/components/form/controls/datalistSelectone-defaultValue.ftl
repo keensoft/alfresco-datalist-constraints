@@ -21,6 +21,10 @@
    </#if>
 </#if>
 
+<#if field.control.params.defaultValue??>
+	<#assign defaultValue=field.control.params.defaultValue>
+</#if>
+
 <div class="form-field">
    <#if form.mode == "view">
       <div class="viewmode-field">
@@ -90,21 +94,21 @@ YAHOO.util.Event.onContentReady("${fieldHtmlId}", function ()
                  if (obj)
                  {
                  
-	                for (i = 0; i < obj.length; i++) {
-	                      var newOption = document.createElement('option');
-	                      newOption.value = obj[i].code;
-	                      newOption.text = obj[i].value;
-	                      YAHOO.util.Dom.get("${fieldHtmlId}").options.add(newOption);
-	                }
-                
-		            // Current value
-		            var sp = document.getElementById("${fieldHtmlId}");
-		            sp.value = "${field.value}";
-                
+			          for (i = 0; i < obj.length; i++) {
+                    	     var newOption = document.createElement('option');
+                    	     newOption.value = obj[i].code;
+                    	     newOption.text = obj[i].value;
+                   	     YAHOO.util.Dom.get("${fieldHtmlId}").options.add(newOption);
+                    	     if(obj[i].code == "${defaultValue?string}")
+                    	     {
+                    		     YAHOO.util.Dom.get("${fieldHtmlId}").options[i].selected = "selected";	
+                    	     }
+		        	      }
+		        	  
                  }
              }
           }
-     });
+	   });
     
 
 }, this);
