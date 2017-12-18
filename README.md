@@ -84,3 +84,35 @@ From Sample 2 Site   > Values = 1,2
 ## Version 3.1.0
 
 Added controls for default value and parent selection
+
+## Version 3.2.0
+
+AMP artifacts ready-to-deploy available at [3.2.0](https://github.com/keensoft/alfresco-datalist-constraints/releases/tag/3.2.0)
+
+Keywords `[ADD]` and `[REPLACE]` have been added to define the behaviour of a list inside a Site:
+
+* `[ADD]` merges values from global Dictionary list and Site list
+* `[REPLACE]` includes only values from Site list
+
+This keyword has to be included in any place at `Description` field when declaring the list inside a Site.
+
+** Sample scenario **
+
+Datalist definitions
+
+```
+Dictionary Site > Datalist "Options" > Values = 1,2
+Sample 1 Site   > Datalist "Options" (including [ADD] in description) > Values = 3,4
+Sample 2 Site   > Datalist "Options" (including [REPLACE] in description) > Values = 3,4
+Sample 3 Site   > No datalist defined
+```
+
+Values provided by combos 
+
+```
+Outside from a Site  > Values = 1,2
+From Advanced Search > Values = 1,2,3,4
+From Sample 1 Site   > Values = 1,2,3,4
+From Sample 2 Site   > Values = 3,4
+From Sample 3 Site   > Values = 1,2
+```

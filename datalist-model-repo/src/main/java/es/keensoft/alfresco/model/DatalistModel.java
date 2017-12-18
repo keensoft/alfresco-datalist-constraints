@@ -9,4 +9,8 @@ public class DatalistModel {
 	public static final QName DATALIST_MODEL_VALUE_PROPERTY = QName.createQName(DATALIST_MODEL_URI, "value");
 	public static final QName DATALIST_MODEL_ITEM_TYPE = QName.createQName(DATALIST_MODEL_URI, "optionList");
 	
+	public enum DataListStatus {
+	    ADD, REPLACE, NONE
+	}
+	
 }

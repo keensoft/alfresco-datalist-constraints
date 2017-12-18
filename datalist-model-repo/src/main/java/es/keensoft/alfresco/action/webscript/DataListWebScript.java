@@ -28,10 +28,14 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
 import org.springframework.extensions.webscripts.WebScriptResponse;
 
 import es.keensoft.alfresco.model.DatalistModel;
+import es.keensoft.alfresco.model.DatalistModel.DataListStatus;
 
 public class DataListWebScript extends AbstractWebScript {
 	
-	private static final String JSON_CODE = "code";
+	private static final String REPLACE_DESK_MARK = "[REPLACE]";
+    private static final String ADD_DESC_MARK = "[ADD]";
+    
+    private static final String JSON_CODE = "code";
 	private static final String JSON_VALUE = "value";
 	
 	private static final String DATALIST_CONTAINER_ID = "dataLists";
@@ -71,8 +75,21 @@ public class DataListWebScript extends AbstractWebScript {
 		            siteId = siteInfo.getShortName();
 		        }
 		    }
-		    if (siteId != null && existsDatalist(siteId, targetedDataListName)) {
-		        sites.add(siteService.getSite(siteId));
+		    DataListStatus siteStatus = DataListStatus.NONE;
+		    if (siteId != null) {
+		        siteStatus = existsDatalist(siteId, targetedDataListName);
+		        switch(siteStatus) {
+        		        case NONE: 
+        		            sites = siteService.listSites(null, DATALIST_PRESET);
+        		            break;
+        		        case ADD: 
+        		            sites = siteService.listSites(null, DATALIST_PRESET);
+        		            sites.add(siteService.getSite(siteId));
+        		            break;
+        		        case REPLACE:
+        		            sites.add(siteService.getSite(siteId));
+        		            break;
+		        }
 		    } else {
 		        sites = siteService.listSites(null, DATALIST_PRESET);
 		    }
@@ -168,18 +185,29 @@ public class DataListWebScript extends AbstractWebScript {
 		return sortedMap;
 	}
 	
-	private boolean existsDatalist(String siteId, String targetedDataListName) {
+	private DataListStatus existsDatalist(String siteId, String targetedDataListName) {
 	    
         NodeRef dataListContainer = SiteServiceImpl.getSiteContainer(siteId, DATALIST_CONTAINER_ID, true, siteService, transactionService, taggingService);
         List<ChildAssociationRef> dataListsNodes = nodeService.getChildAssocs(dataListContainer);
         for (ChildAssociationRef dataList : dataListsNodes) {
             if (dataList.getTypeQName().isMatch(ContentModel.ASSOC_CONTAINS)) {
                 if (nodeService.getProperty(dataList.getChildRef(), ContentModel.PROP_TITLE).toString().equals(targetedDataListName)) {
-                    return true;
+                    Object description = nodeService.getProperty(dataList.getChildRef(), ContentModel.PROP_DESCRIPTION);
+                    if (description != null) {
+                        if (description.toString().indexOf(ADD_DESC_MARK) > 0) {
+                            return DataListStatus.ADD;
+                        } else if (description.toString().indexOf(REPLACE_DESK_MARK) > 0) {
+                            return DataListStatus.REPLACE;
+                        } else {
+                            return DataListStatus.REPLACE;
+                        }
+                    } else {
+                       return DataListStatus.REPLACE;
+                    }
                 }
             }
         }
-        return false;
+        return DataListStatus.NONE;
 	    
 	}
 	
