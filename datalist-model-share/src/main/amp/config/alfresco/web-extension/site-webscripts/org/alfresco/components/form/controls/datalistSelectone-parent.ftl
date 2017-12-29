@@ -90,10 +90,12 @@ control parameters in the form config by hiding the div {field.name}-control
       var linkTemplate="/keensoft/datalist/${field.control.params.itemType}?search=true&"+ (new Date().getTime());  
   <#elseif page?? && page.url.templateArgs.site??>
       var linkTemplate="/keensoft/datalist/${field.control.params.itemType}?siteId=${page.url.templateArgs.site!""}&"+ (new Date().getTime());
-  <#elseif args?? && args.destination??>
-      var linkTemplate="/keensoft/datalist/${field.control.params.itemType}?nodeRef=${args.destination!""}&"+ (new Date().getTime());
+  <#elseif form?? && form.arguments.itemId??>
+      var linkTemplate="/keensoft/datalist/${field.control.params.itemType}?nodeRef=${form.arguments.itemId!""}&"+ (new Date().getTime());
   <#elseif page?? && page.url.args.nodeRef??>
       var linkTemplate="/keensoft/datalist/${field.control.params.itemType}?nodeRef=${page.url.args.nodeRef!""}&"+ (new Date().getTime());
+  <#elseif args?? && args.destination??>
+      var linkTemplate="/keensoft/datalist/${field.control.params.itemType}?nodeRef=${args.destination!""}&"+ (new Date().getTime());
   <#else>
       var linkTemplate="/keensoft/datalist/${field.control.params.itemType}?"+ (new Date().getTime());
   </#if>
