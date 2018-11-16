@@ -153,7 +153,7 @@ for listName in "${lists[@]}"; do
 	values="${listName}[@]"
 	for value in "${!values}"; do
 
-		code=$(echo "${code}" | cut -d "," -f 1)
+		code=$(echo "${value}" | cut -d "," -f 1)
 		value=$(echo "${value}" | cut -d "," -f 2)
 
 		itemNodeRef=$(curl --silent -X POST \
