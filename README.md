@@ -118,3 +118,54 @@ From Sample 1 Site   > Values = 1,2,3,4
 From Sample 2 Site   > Values = 3,4
 From Sample 3 Site   > Values = 1,2
 ```
+
+# Sample script to create lists and values from command line
+
+```bash
+#!/bin/sh
+
+# Alfresco server hostname
+hostname=localhost
+# Basic auth, admin/admin by default
+authorization="Authorization: Basic YWRtaW46YWRtaW4="
+
+# Lists names
+lists=("lista1" "lista2" "lista3")
+
+# Values by list name
+lista1=("code1a,value1a" "code1b,value1b")
+lista2=("code2a,value2a" "code2b,value2b")
+lista3=("code3,value3")
+
+for listName in "${lists[@]}"; do
+
+	listNodeRef=$(curl --silent -X POST \
+	  http://"${hostname}"/alfresco/s/api/type/dl%3AdataList/formprocessor \
+	  -H "${authorization}" \
+	  -H 'content-type: multipart/form-data;' \
+	  -F alf_destination=workspace://SpacesStore/582ca69b-4a38-42ac-bb7b-d215929a2e17 \
+	  -F prop_cm_title=$listName \
+	  -F prop_dl_dataListItemType=dlm:optionList \
+	  | grep "persistedObject" | cut -c"25-" | rev | cut -c"3-" | rev)
+
+	echo "Created list $listName ($listNodeRef)"
+
+	values="${listName}[@]"
+	for value in "${!values}"; do
+
+		code=$(echo "${value}" | cut -d "," -f 1)
+		value=$(echo "${value}" | cut -d "," -f 2)
+
+		itemNodeRef=$(curl --silent -X POST \
+		  http://"${hostname}"/alfresco/s/api/type/dlm%3AoptionList/formprocessor \
+	      -H "${authorization}" \
+		  -H 'content-type: multipart/form-data;' \
+		  -F alf_destination=$listNodeRef \
+		  -F prop_dlm_code=${code} \
+		  -F prop_dlm_value=${value} \
+		  | grep "persistedObject" | cut -c"25-" | rev | cut -c"3-" | rev)
+		  
+	done
+
+done
+```
