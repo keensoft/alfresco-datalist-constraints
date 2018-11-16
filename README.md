@@ -161,8 +161,8 @@ for listName in "${lists[@]}"; do
 	      -H "${authorization}" \
 		  -H 'content-type: multipart/form-data;' \
 		  -F alf_destination=$listNodeRef \
-		  -F prop_dlm_code=${code} \
-		  -F prop_dlm_value=${value} \
+		  -F 'prop_dlm_code='"${code}"'' \
+		  -F 'prop_dlm_value='"${value}"'' \
 		  | grep "persistedObject" | cut -c"25-" | rev | cut -c"3-" | rev)
 		  
 	done
