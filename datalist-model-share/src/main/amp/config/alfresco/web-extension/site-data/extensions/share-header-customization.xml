@@ -1,0 +1,26 @@
+<extension>
+  <modules>
+    <module>
+      <id>Share Header Customization</id>
+      <auto-deploy>true</auto-deploy>
+      <evaluator type="default.extensibility.evaluator"/>
+      <customizations>
+         
+         <!-- Target the header in legacy Share pages -->
+         <customization>
+            <targetPackageRoot>org.alfresco</targetPackageRoot>
+            <sourcePackageRoot>org.alfresco.share.pages.customizations</sourcePackageRoot>
+         </customization>
+
+         <!-- Target full Aikau Share pages -->
+         <customization>
+           <targetPackageRoot>org.alfresco.share.pages</targetPackageRoot>
+           <sourcePackageRoot>org.alfresco.share.pages.customizations.share.header</sourcePackageRoot>
+           <alwaysApply>
+             <webscript>share-header</webscript>
+           </alwaysApply>
+         </customization>
+      </customizations>
+    </module>
+  </modules>
+</extension>
