@@ -4,7 +4,7 @@ alfresco-datalist-constraints
 
 *Compatible with Alfresco CE 4.2.c, 4.2.f, 5.0.d, 5.1.g (aka 201605) & 5.2.g (aka 201707)*
 
-**Lastest release** available at [3.2.2](https://github.com/keensoft/alfresco-datalist-constraints/releases/tag/3.2.2)
+**Lastest release** available at [4.0.0](https://github.com/keensoft/alfresco-datalist-constraints/releases/tag/4.0.0)
 
 Using datalists to maintain Alfresco model constraints.
 
